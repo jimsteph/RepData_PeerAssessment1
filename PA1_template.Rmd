@@ -2,18 +2,73 @@
 
 
 ## Loading and preprocessing the data
+The data file (activity.zip) was included in the forked repo.  Since it doesn't have to be downloaded it's simple to unzip it and read it into the variable `act`:
 
+```{r initialization, results='hide', message=FALSE}
+###### Initialization
+## Clear the workspace
+rm(list = ls(all = TRUE))
 
+## Load required libraries
+stopifnot(require(dplyr))
+stopifnot(require(ggplot2))
+
+## Read in the data and massage it to the desired formats/factors
+zipName <- "./activity.zip"
+unzip(zipName)
+fileName <- "./activity.csv"
+act <- read.csv(fileName, 
+                header = TRUE, 
+                na.strings = "NA", 
+                colClasses = c("integer", "character", "integer"))
+act$date <- as.Date(act$date, "%Y-%m-%d")
+act$date <- as.factor(act$date)
+```
 
 ## What is mean total number of steps taken per day?
+I find that the _dplyr_ package makes it very simply to calculate aggregates across subsets.  In this case we first use the `summarise()` function to calculate the total number of steps taken per day, then take the mean and median of those steps:
+```{r totalSteps, message=FALSE}
+###### Total number of steps per day
+## get the total per day and plot it as a histogram
+act.no_na <- na.omit(act)
+steps.total <- summarise(group_by(act.no_na,date), sum(steps))
+names(steps.total)[2] <- "total"
+qplot(steps.total[, 2], 
+      data = steps.total, 
+      geom="histogram", 
+      xlab="Steps", 
+      ylab="Count",
+      main="Total Steps per Day")
+```
 
+The mean number of steps per day (ignoring NAs) is:
+```{r}
+mean(steps.total[, 2])
+```
 
+and the median number of steps per day (ignoring NAs) is:
+```{r}
+median(steps.total[, 2])
+```
 
 ## What is the average daily activity pattern?
+```{r}
+steps.interval <- summarise(group_by(act.no_na, interval), mean(steps))
+names(steps.interval)[2] <- "total"
+ggplot(steps.interval, aes(interval, total)) +
+  geom_line() +
+  ylab("total number of steps") +
+  ggtitle("Steps per 5 Minute Interval")
+```
 
+The interval with the most steps is:
+```{r}
+max(steps.interval[, 2])  # max number of steps in an interval
+#si.max  # print it out
+#si.interval <- steps.interval[steps.interval$total == si.max] # interval with that max
+```
 
-
-## Imputing missing values
+## Inputing missing values
 
 
 
