@@ -1,5 +1,5 @@
 # Reproducible Research: Peer Assessment 1
-
+This project mines data from a device that counts the number of steps the wearer takes.  Each row contains the number of steps taken on a particular day in a specific five minute interval.
 
 ## Loading and preprocessing the data
 The data file (activity.zip) was included in the forked repo.  Since it doesn't have to be downloaded it's simple to unzip it and read it into the variable `act`:
@@ -52,6 +52,7 @@ median(steps.total[, 2])
 ```
 
 ## What is the average daily activity pattern?
+The dataset lists the number of steps taken in five minute intervals.  We can average the number of steps in each discrete interval using the following code:
 ```{r}
 steps.interval <- summarise(group_by(act.no_na, interval), mean(steps))
 names(steps.interval)[2] <- "total"
@@ -61,11 +62,10 @@ ggplot(steps.interval, aes(interval, total)) +
   ggtitle("Steps per 5 Minute Interval")
 ```
 
-The interval with the most steps is:
+Now it's a simple matter to find the interval with the most steps:
 ```{r}
-max(steps.interval[, 2])  # max number of steps in an interval
-#si.max  # print it out
-#si.interval <- steps.interval[steps.interval$total == si.max] # interval with that max
+si.max <- max(steps.interval[, 2])  # max number of steps in an interval
+steps.interval[steps.interval$total == si.max, 1] # interval with that max
 ```
 
 ## Inputing missing values
