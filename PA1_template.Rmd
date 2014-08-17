@@ -6,8 +6,6 @@ The data file (activity.zip) was included in the forked repo.  Since it doesn't 
 
 ```{r initialization, results='hide', message=FALSE}
 ###### Initialization
-## Clear the workspace
-rm(list = ls(all = TRUE))
 
 ## Load required libraries
 stopifnot(require(dplyr))
@@ -69,7 +67,46 @@ steps.interval[steps.interval$total == si.max, 1] # interval with that max
 ```
 
 ## Inputing missing values
+The original data set (in `act`) contained some rows with NA values in the _step_ column.  `act.no_na` was created by omitting (`na.omit()`) all rows that had NA values.  To find the number of rows with NA, simple subtract the number of rows in `act.no_na` from `act`:
 
+```{r}
+nrow(act) - nrow(act.no_na)
+```
 
+To fix the missing values, the strategy I'll be using is to replace NA values in a specific interval with the average number of steps in that interval:
 
+```{r}
+b <- filter(act, is.na(act$steps)) # get only NA values
+b[b$interval == steps.interval$interval, 1] <- steps.interval[, 2]
+a <- filter(act, !is.na(act$steps))
+acta <- rbind(a, b)
+```
+
+Now we can recreate the histogram from above with all the new values: 
+```{r}
+###### Total number of steps per day
+## get the total per day and plot it as a histogram
+steps.totalb <- summarise(group_by(acta,date), sum(steps))
+names(steps.totalb)[2] <- "total"
+qplot(steps.totalb[, 2], 
+      data = steps.totalb, 
+      geom="histogram", 
+      xlab="Steps", 
+      ylab="Count",
+      main="Total Steps per Day")
+```
+
+The mean number of steps per day (ignoring NAs) is:
+```{r}
+mean(steps.totalb[, 2])
+```
+
+and the median number of steps per day (ignoring NAs) is:
+```{r}
+median(steps.totalb[, 2])
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+
+```
