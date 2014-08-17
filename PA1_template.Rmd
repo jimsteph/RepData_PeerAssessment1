@@ -105,8 +105,26 @@ and the median number of steps per day (ignoring NAs) is:
 ```{r}
 median(steps.totalb[, 2])
 ```
+
+Note that these are (almost) the same values as above.  This does not appear to be an error, because if we calculate the sum of each we see that they're different:
+```{r}
+nrow(steps.total)
+sum(steps.total[, 2])
+sum(steps.total[, 2])/nrow(steps.total)
+nrow(steps.totalb)
+sum(steps.totalb[, 2])
+sum(steps.totalb[, 2])/nrow(steps.totalb)
+```
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r}
-
+acta$date <- as.Date(acta$date)
+acta$weekdays <- weekdays(acta$date)
+d <- filter(acta, acta$weekdays %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+d$weekend <- "Weekday"
+e <- filter(acta, acta$weekdays %in% c("Saturday", "Sunday"))
+e$weekend <- "Weekend"
+acta <- rbind(d, e)
+acta$weekend <- factor(acta$weekend)
 ```
