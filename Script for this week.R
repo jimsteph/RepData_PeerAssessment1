@@ -74,4 +74,17 @@ sum(steps.totalb[, 2])/nrow(steps.totalb)
 
 acta$date <- as.Date(acta$date)
 acta$weekdays <- weekdays(acta$date)
-#acta$weekdays <- as.factor(acta$weekdays)
+d <- filter(acta, acta$weekdays %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+d$weekend <- "Weekday"
+e <- filter(acta, acta$weekdays %in% c("Saturday", "Sunday"))
+e$weekend <- "Weekend"
+acta <- rbind(d, e)
+acta$weekend <- factor(acta$weekend)
+
+steps.interval.weekend <- summarise(group_by(acta, interval, weekend), mean(steps))
+names(steps.interval.weekend)[3] <- "total"
+ggplot(steps.interval.weekend, aes(interval, total)) +
+  geom_line() +
+  facet_grid(weekend ~ .) +
+  ylab("total number of steps") +
+  ggtitle("Steps per 5 Minute Interval")

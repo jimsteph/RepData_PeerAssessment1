@@ -6,7 +6,6 @@ The data file (activity.zip) was included in the forked repo.  Since it doesn't 
 
 ```{r initialization, results='hide', message=FALSE}
 ###### Initialization
-
 ## Load required libraries
 stopifnot(require(dplyr))
 stopifnot(require(ggplot2))
@@ -106,8 +105,8 @@ and the median number of steps per day (ignoring NAs) is:
 median(steps.totalb[, 2])
 ```
 
-Note that these are (almost) the same values as above.  This does not appear to be an error, because if we calculate the sum of each we see that they're different:
-```{r}
+Note that these are (almost) the same values as above.  This does not appear to be an error, because if we calculate the mean manually (sum of steps divided by number of rows) for each you can see that despite the sums and rows being different the means are identical:
+```{r Manually Calculate Means}
 nrow(steps.total)
 sum(steps.total[, 2])
 sum(steps.total[, 2])/nrow(steps.total)
@@ -117,8 +116,11 @@ sum(steps.totalb[, 2])/nrow(steps.totalb)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+It is further possible to chart the number of steps per interval, broken down into weekend versus weekday steps.  As you can see from the following plot on weekdays there is a large spike around interval 800, then low levels of activity until around interval 1900; on the weekends the inititial spike is lower, and the level of activity through the day is higher, tapering off after interval 2000.
 
-```{r}
+```{r Activity Patterns}
+###### Show Weekend version Weekday Activity Patterns
+## Add a factor column for weekend versus weekdays
 acta$date <- as.Date(acta$date)
 acta$weekdays <- weekdays(acta$date)
 d <- filter(acta, acta$weekdays %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
@@ -127,4 +129,13 @@ e <- filter(acta, acta$weekdays %in% c("Saturday", "Sunday"))
 e$weekend <- "Weekend"
 acta <- rbind(d, e)
 acta$weekend <- factor(acta$weekend)
+
+## Plot the data: weekend versus weekday steps
+steps.interval.weekend <- summarise(group_by(acta, interval, weekend), mean(steps))
+names(steps.interval.weekend)[3] <- "total"
+ggplot(steps.interval.weekend, aes(interval, total)) +
+  geom_line() +
+  facet_grid(weekend ~ .) +
+  ylab("total number of steps") +
+  ggtitle("Steps per 5 Minute Interval")
 ```
