@@ -88,3 +88,4 @@ ggplot(steps.interval.weekend, aes(interval, total)) +
   facet_grid(weekend ~ .) +
   ylab("total number of steps") +
   ggtitle("Steps per 5 Minute Interval")
+
