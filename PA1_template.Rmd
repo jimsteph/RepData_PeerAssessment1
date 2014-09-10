@@ -95,13 +95,13 @@ qplot(steps.totalb[, 2],
       main="Total Steps per Day")
 ```
 
-The mean number of steps per day (ignoring NAs) is:
-```{r meanStepsWithoutNA}
+The mean number of steps per day (with interpolated values for the NAs) is:
+```{r meanStepsWithNA}
 mean(steps.totalb[, 2])
 ```
 
-and the median number of steps per day (ignoring NAs) is:
-```{r medianStepsWithoutNA}
+and the median number of steps per day (with interpolated values for the NAs) is:
+```{r medianStepsWithNA}
 median(steps.totalb[, 2])
 ```
 
